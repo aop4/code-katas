@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * An implementation of the T9 algorithm.
@@ -130,7 +129,6 @@ public class PredictiveT9Service {
      * Represents a word from the word frequency dataset.
      */
     @Getter
-    @Setter
     @Builder
     private static class WordWithFrequency implements Comparable<WordWithFrequency> {
         private String word;
