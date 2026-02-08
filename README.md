@@ -1,5 +1,5 @@
-# Adventures in Leetcode
-This is a collection of original solutions to algorithms problems from Leetcode and other sources.
+# Code katas
+This is a collection of algorithms problems for honing your programming skills (a.k.a. code katas). Some of the katas come from external sources, which will be indicated. The rest are original.
 
 ## Build and test Java solutions
 
