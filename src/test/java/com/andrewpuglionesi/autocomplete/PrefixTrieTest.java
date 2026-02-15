@@ -122,14 +122,15 @@ public class PrefixTrieTest {
         List<String> wordsWithPrefix = trie.findWordsWithPrefix(specialChars, Integer.MAX_VALUE);
         assertEquals(List.of(specialChars), wordsWithPrefix);
     }
-
+    
     @Test
     void findWordsWithPrefixLargeWordSet() throws IOException {
         String wordListPath = "wikipedia-word-list.txt";
         try (InputStream wordListFile = Thread.currentThread().getContextClassLoader().getResourceAsStream(wordListPath);
-             BufferedReader fileReader = new BufferedReader(new InputStreamReader(wordListFile))) {
+             BufferedReader fileReader = new BufferedReader(new InputStreamReader(wordListFile));
+             Stream<String> wordsFromFile = fileReader.lines()) {
 
-            PrefixTrie trie = new PrefixTrie(fileReader.lines());
+            PrefixTrie trie = new PrefixTrie(wordsFromFile);
 
             List<String> wordsWithPrefix = trie.findWordsWithPrefix("a", Integer.MAX_VALUE);
             assertEquals(4537, wordsWithPrefix.size());
