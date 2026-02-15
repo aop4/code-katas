@@ -2,6 +2,7 @@ package com.andrewpuglionesi.predictivet9;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -75,5 +76,19 @@ class PredictiveT9ServiceTest {
     void predictWordUsingEveryDigit() {
         List<String> output = service.predictWord("9282462537");
         assertEquals(List.of("watchmaker"), output);
+    }
+
+    @Test
+    void validateEveryCharacterToDigitMapping() {
+        // Note: The string "the quick brown fox jumps over the lazy dog" contains every English letter.
+        // Adding this test to confirm all digits are correctly mapped to letters.
+        assertTrue(service.predictWord("843").contains("the"));
+        assertTrue(service.predictWord("78425").contains("quick"));
+        assertTrue(service.predictWord("27696").contains("brown"));
+        assertTrue(service.predictWord("369").contains("fox"));
+        assertTrue(service.predictWord("58677").contains("jumps"));
+        assertTrue(service.predictWord("6837").contains("over"));
+        assertTrue(service.predictWord("5299").contains("lazy"));
+        assertTrue(service.predictWord("364").contains("dog"));
     }
 }
