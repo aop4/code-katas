@@ -1,9 +1,6 @@
 package com.andrewpuglionesi.base64;
 
 import java.nio.charset.Charset;
-import java.util.BitSet;
-
-import javax.annotation.Nonnull;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,7 +22,7 @@ public class Base64Decoder {
      * The same character set should be used to encode and decode data because character sets control
      * the transformation of strings to binary.
      */
-    public static String decode(@NonNull final String base64Input, @Nonnull final Charset charset) {
+    public static String decode(@NonNull final String base64Input, @NonNull final Charset charset) {
         byte[] bytes = decode(base64Input);
         return new String(bytes, charset);
     }
@@ -37,14 +34,17 @@ public class Base64Decoder {
         String cleanedBase64 = cleanBase64String(base64Input);
 
         int base64CharCount = cleanedBase64.length();
-        BitSet bitVector = new BitSet(base64CharCount * BITS_PER_SEXTET);
+        int numBits = base64CharCount * BITS_PER_SEXTET;
+        int numBytes = numBits / BITS_PER_BYTE;
+
+        byte[] bitVector = new byte[numBytes];
 
         for (int i = 0; i < cleanedBase64.length(); i++) {
             char b64Char = cleanedBase64.charAt(i);
             byte binarySextet = Base64Constants.B64_CHAR_TO_BINARY_MAP.get(b64Char);
             addSextetToBitVector(bitVector, i * BITS_PER_SEXTET, binarySextet);
         }
-        return bitVectorToBytes(bitVector, base64CharCount * BITS_PER_SEXTET);
+        return bitVector;
     }
 
     /**
@@ -54,34 +54,26 @@ public class Base64Decoder {
         return base64.replaceAll("[^a-zA-Z0-9+/]", "");
     }
 
-    private static void addSextetToBitVector(final BitSet bitVector, final int start, final byte sextet) {
-        for (int sextetIndex = 0; sextetIndex < BITS_PER_SEXTET; sextetIndex++) {
-            int mask = 1 << (BITS_PER_SEXTET - sextetIndex - 1);
-            bitVector.set(start + sextetIndex, (mask & sextet) != 0);
+    private static void addSextetToBitVector(final byte[] bitVector, final int startIndex, final byte sextet) {
+        int mask = 0x20;
+        for (int bitIndex = 0; bitIndex < BITS_PER_SEXTET; bitIndex++) {
+            if ((mask & sextet) != 0) {
+                setBit(bitVector, startIndex + bitIndex);
+            }
+            mask = mask >>> 1;
         }
     }
 
     /**
-     * @param vectorLength length of vector in bits.
-     * @return an array representing the bits in the BitSet in ascending order by index.
-     * 
-     * @implNote BitSet.toByteArray() does not suffice because it reverses the bits within each byte (little endian
-     * instead of big endian).
-     * 
-     * Clearly it's not optimal to set every bit individually, this is just a compromise I'm making due to sunken
-     * costs.
+     * Sets the indexth bit in bitVector to 1.
      */
-    private static byte[] bitVectorToBytes(final BitSet bitVector, final int vectorLength) {
-        int numBytes = vectorLength / BITS_PER_BYTE;
-        byte[] bytes = new byte[numBytes];
-        for (int byteIndex = 0; byteIndex < numBytes; byteIndex++) {
-            byte currByte = 0;
-            for (int bitIndex = byteIndex * BITS_PER_BYTE; bitIndex < (byteIndex + 1) * BITS_PER_BYTE; bitIndex++) {
-                byte nextBit = bitVector.get(bitIndex) ? (byte) 1 : (byte) 0;
-                currByte = (byte) ((currByte << 1) | nextBit);
-            }
-            bytes[byteIndex] = currByte;
-        }
-        return bytes;
+    private static void setBit(final byte[] bitVector, final int index) {
+        int byteIndex = index / BITS_PER_BYTE;
+        int bitIndex = index % BITS_PER_BYTE;
+
+        byte originalVal = bitVector[byteIndex];
+        byte newVal = (byte) (originalVal | (0x80 >>> bitIndex));
+
+        bitVector[byteIndex] = newVal;
     }
 }

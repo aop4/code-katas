@@ -1,7 +1,6 @@
 package com.andrewpuglionesi.base64;
 
 import java.nio.charset.Charset;
-import java.util.BitSet;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,7 +41,6 @@ public class Base64Encoder {
      */
     public static String encode(@NonNull final byte[] bytes) {
         StringBuilder b64Encoded = new StringBuilder();
-        BitSet bitVector = buildBigEndianBitVector(bytes);
 
         int excessBytes = bytes.length % MODULUS;
         int numBits = bytes.length * BITS_PER_BYTE;
@@ -53,7 +51,7 @@ public class Base64Encoder {
         
         for (int i = 0; i < b64CharCount; i++) {
             int startOfSextet = i * BITS_PER_SEXTET;
-            char nextChar = getB64Char(bitVector, startOfSextet);
+            char nextChar = getB64Char(bytes, startOfSextet);
             b64Encoded.append(nextChar);
         }
 
@@ -64,44 +62,31 @@ public class Base64Encoder {
         return b64Encoded.toString();
     }
 
-    /**
-     * Combines all bytes in the provided array into a continuous bit vector. The order of bytes is maintained,
-     * as is the order of bits within each byte.
-     * 
-     * @implNote BitSet.valueOf(byte[]) differs in that each byte is written backward, with its least significant bits
-     * at the lowest index, while the order of bytes is maintained. That would make Base64 encoding extremely
-     * difficult, so this method builds a big endian vector instead.
-     * 
-     * Clearly it's not optimal to set every bit individually, this is just a compromise I'm making due to sunken
-     * costs.
-     */
-    private static BitSet buildBigEndianBitVector(final byte[] bytes) {
-        BitSet bitVector = new BitSet();
-        for (int byteIndex = 0; byteIndex < bytes.length; byteIndex++) {
-            byte currByte = bytes[byteIndex];
-            short mask = 0x80;
-            for (int bitIndex = byteIndex * BITS_PER_BYTE; bitIndex < (byteIndex + 1) * BITS_PER_BYTE; bitIndex++) {
-                bitVector.set(bitIndex, (currByte & mask) != 0);
-                mask >>>= 1;
-            }
-        }
-        return bitVector;
-    }
-
-    private static char getB64Char(final BitSet bitVector, final int start) {
+    @SuppressWarnings("PMD.UselessParentheses")
+    private static char getB64Char(final byte[] bitVector, final int start) {
         int b64CharIndex = 0;
         int bitIndex;
-        for (bitIndex = start; bitIndex < start + BITS_PER_SEXTET && bitIndex < bitVector.size(); bitIndex++) {
-            byte nextBit = bitVector.get(bitIndex) ? (byte) 1 : (byte) 0;
+        for (bitIndex = start; (bitIndex < start + BITS_PER_SEXTET) && (bitIndex < bitVector.length * BITS_PER_BYTE); bitIndex++) {
+            byte nextBit = readBit(bitVector, bitIndex);
             b64CharIndex = (b64CharIndex << 1) | nextBit;
         }
         // handle case where last sextet extends beyond length of bit vector (need zero-padding to produce correct character)
-        // TODO: may be able to remove this because BitSet doesn't care if you overrun its array
         int bitsProcessed = bitIndex - start;
         if (bitsProcessed < BITS_PER_SEXTET) {
             int bitsRemaining = BITS_PER_SEXTET - bitsProcessed;
             b64CharIndex = b64CharIndex << bitsRemaining;
         }
         return Base64Constants.BASE64_CHARACTERS.get(b64CharIndex);
+    }
+
+    /**
+     * @return the indexth bit of bitVector (either 0 or 1).
+     */
+    private static byte readBit(final byte[] bitVector, final int index) {
+        int byteIndex = index / BITS_PER_BYTE;
+        int bitIndex = index % BITS_PER_BYTE;
+        
+        int distanceFromLsb = BITS_PER_BYTE - bitIndex - 1;
+        return (byte) ((bitVector[byteIndex] >>> distanceFromLsb) & 1);
     }
 }
