@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -270,4 +271,138 @@ public class BinaryTreeTest {
             ));
         });
     }
+
+    @Test
+    void traversalsOfEmptyTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Collections.emptyList());
+        
+        List<Integer> expected = Collections.emptyList();
+        
+        assertEquals(expected, tree.preOrderTraversal());
+
+        assertEquals(expected, tree.inOrderTraversal());
+
+        assertEquals(expected, tree.postOrderTraversal());
+
+        assertEquals(expected, tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalsOfSingletonTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(List.of(1));
+        
+        List<Integer> expected = List.of(1);
+        
+        assertEquals(expected, tree.preOrderTraversal());
+
+        assertEquals(expected, tree.inOrderTraversal());
+
+        assertEquals(expected, tree.postOrderTraversal());
+
+        assertEquals(expected, tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalsOfPerfectTwoLevelTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(List.of(
+                1,
+            2,      3
+        ));
+
+        assertEquals(List.of(1, 2, 3), tree.preOrderTraversal());
+
+        assertEquals(List.of(2, 1, 3), tree.inOrderTraversal());
+
+        assertEquals(List.of(2, 3, 1), tree.postOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3), tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalsOfPerfectThreeLevelTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(List.of(
+                  1,
+             2,       3,
+          4,   5,   6,   7
+        ));
+
+        assertEquals(List.of(1, 2, 4, 5, 3, 6, 7), tree.preOrderTraversal());
+
+        assertEquals(List.of(4, 2, 5, 1, 6, 3, 7), tree.inOrderTraversal());
+
+        assertEquals(List.of(4, 5, 2, 6, 7, 3, 1), tree.postOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3, 4, 5, 6, 7), tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalOfLinearLeftLeaningTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Arrays.asList(
+                    1,
+                2,     null,
+            3
+        ));
+
+        assertEquals(List.of(1, 2, 3), tree.preOrderTraversal());
+
+        assertEquals(List.of(3, 2, 1), tree.inOrderTraversal());
+
+        assertEquals(List.of(3, 2, 1), tree.postOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3), tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalOfLinearRightLeaningTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Arrays.asList(
+                    1,
+            null,       2,
+                    null,   3
+        ));
+
+        assertEquals(List.of(1, 2, 3), tree.preOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3), tree.inOrderTraversal());
+
+        assertEquals(List.of(3, 2, 1), tree.postOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3), tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalOfUnbalancedTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Arrays.asList(
+                    1,
+              2,         3,
+            4,  5,  null, null,
+           6,7
+        ));
+
+        assertEquals(List.of(1, 2, 4, 6, 7, 5, 3), tree.preOrderTraversal());
+
+        assertEquals(List.of(6, 4, 7, 2, 5, 1, 3), tree.inOrderTraversal());
+
+        assertEquals(List.of(6, 7, 4, 5, 2, 3, 1), tree.postOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3, 4, 5, 6, 7), tree.levelOrderTraversal());
+    }
+
+    @Test
+    void traversalOfZigZagTree() {
+        BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Arrays.asList(
+                    1,
+              2,        null,
+         null,   3,
+               4, null
+        ));
+
+        assertEquals(List.of(1, 2, 3, 4), tree.preOrderTraversal());
+
+        assertEquals(List.of(2, 4, 3, 1), tree.inOrderTraversal());
+
+        assertEquals(List.of(4, 3, 2, 1), tree.postOrderTraversal());
+
+        assertEquals(List.of(1, 2, 3, 4), tree.levelOrderTraversal());
+    }
+
 }

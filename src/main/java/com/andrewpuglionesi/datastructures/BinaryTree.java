@@ -2,8 +2,10 @@ package com.andrewpuglionesi.datastructures;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * A binary tree data structure. The nodes are mutable.
@@ -97,6 +99,56 @@ public class BinaryTree<V> {
         return buildFromPopulatedTraversal(levelOrderTraversal);
     }
 
+    /**
+     * @return all values present in the tree in the order they would be encountered during a pre-order traversal.
+     * Nonexistent child nodes will not be represented in the output.
+     */
+    public List<V> preOrderTraversal() {
+        List<V> values = new ArrayList<>();
+        this.collectPreOrder(this.root, values);
+        return values;
+    }
+
+    /**
+     * @return all values present in the tree in the order they would be encountered during an in-order traversal.
+     * Nonexistent child nodes will not be represented in the output.
+     */
+    public List<V> inOrderTraversal() {
+        List<V> values = new ArrayList<>();
+        this.collectInOrder(this.root, values);
+        return values;
+    }
+
+    /**
+     * @return all values present in the tree in the order they would be encountered during a post-order traversal.
+     * Nonexistent child nodes will not be represented in the output.
+     */
+    public List<V> postOrderTraversal() {
+        List<V> values = new ArrayList<>();
+        this.collectPostOrder(this.root, values);
+        return values;
+    }
+
+    /**
+     * @return all values present in the tree in the order they would be encountered during a level-order traversal.
+     * Nonexistent child nodes will not be represented in the output.
+     */
+    public List<V> levelOrderTraversal() {
+        List<V> values = new ArrayList<>();
+        Queue<Node<V>> toVisit = new LinkedList<>();
+        toVisit.add(this.root);
+
+        while (!toVisit.isEmpty()) {
+            Node<V> current = toVisit.poll();
+            if (current != null) {
+                values.add(current.getValue());
+                toVisit.add(current.getLeft());
+                toVisit.add(current.getRight());
+            }
+        }
+        return values;
+    }
+
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     private static <T> BinaryTree<T> buildFromPopulatedTraversal(final List<T> levelOrderTraversal) {
         final Node<T> root = new Node<>(levelOrderTraversal.get(0));
@@ -128,5 +180,29 @@ public class BinaryTree<V> {
         final BinaryTree<T> tree = new BinaryTree<>(root);
         tree.size = treeSize;
         return tree;
+    }
+
+    private void collectPreOrder(final Node<V> current, final List<V> values) {
+        if (current != null) {
+            values.add(current.getValue());
+            collectPreOrder(current.getLeft(), values);
+            collectPreOrder(current.getRight(), values);
+        }
+    }
+
+    private void collectInOrder(final Node<V> current, final List<V> values) {
+        if (current != null) {
+            collectInOrder(current.getLeft(), values);
+            values.add(current.getValue());
+            collectInOrder(current.getRight(), values);
+        }
+    }
+
+    private void collectPostOrder(final Node<V> current, final List<V> values) {
+        if (current != null) {
+            collectPostOrder(current.getLeft(), values);
+            collectPostOrder(current.getRight(), values);
+            values.add(current.getValue());
+        }
     }
 }
