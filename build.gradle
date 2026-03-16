@@ -38,6 +38,7 @@ jacocoTestReport {
 }
 
 test {
+    maxHeapSize = "2g"
     useJUnitPlatform()
     finalizedBy {
         jacocoTestReport
