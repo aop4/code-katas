@@ -2,7 +2,9 @@ package com.andrewpuglionesi.datastructures;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -156,9 +158,9 @@ public class BitArrayTest {
 
         for (int curr = 0; curr < bitArray.size(); curr++) {
             if (curr == indexToSet) {
-                assertEquals(true, bitArray.getBit(curr));
+                assertTrue(bitArray.getBit(curr));
             } else {
-                assertEquals(false, bitArray.getBit(curr));
+                assertFalse(bitArray.getBit(curr));
             }
         }
     }
@@ -175,9 +177,9 @@ public class BitArrayTest {
 
         for (int curr = 0; curr < bitArray.size(); curr++) {
             if (curr == indexToSet) {
-                assertEquals(false, bitArray.getBit(curr));
+                assertFalse(bitArray.getBit(curr));
             } else {
-                assertEquals(true, bitArray.getBit(curr));
+                assertTrue(bitArray.getBit(curr));
             }
         }
     }
@@ -281,6 +283,7 @@ public class BitArrayTest {
         assertEquals(expected, bitArray.toByteArray()[0]);
     }
 
+    @Test
     void clearExcessBitsAffectsOnlyLastByte() {
         BitArray bitArray = new BitArray(9);
         // negate flips all bits in the underlying byte array (in this case, from 0 to 1)
@@ -290,15 +293,37 @@ public class BitArrayTest {
             (byte) 0b11111111,
             (byte) 0b10000000
         };
-        assertEquals(expected, bitArray.toByteArray());
+        assertArrayEquals(expected, bitArray.toByteArray());
     }
 
+    @Test
     void maximumIndexIsAccessible() {
         BitArray bitArray = new BitArray(MAX_SIZE_IN_BITS);
-        assertEquals(false, bitArray.getBit(MAX_SIZE_IN_BITS - 1));
+        assertFalse(bitArray.getBit(MAX_SIZE_IN_BITS - 1));
 
         bitArray.setBit(MAX_SIZE_IN_BITS - 1, true);
         
-        assertEquals(true, bitArray.getBit(MAX_SIZE_IN_BITS - 1));
+        assertTrue(bitArray.getBit(MAX_SIZE_IN_BITS - 1));
+    }
+
+    @Test
+    void fillSetsAllBitsToZeroOrOne() {
+        BitArray bitArray = new BitArray(16);
+
+        assertArrayEquals(new byte[]{
+            0, 0
+        }, bitArray.toByteArray());
+
+        bitArray.fill(true);
+
+        assertArrayEquals(new byte[]{
+            (byte) 0xff, (byte) 0xff
+        }, bitArray.toByteArray());
+
+        bitArray.fill(false);
+
+        assertArrayEquals(new byte[]{
+            0, 0
+        }, bitArray.toByteArray());
     }
 }

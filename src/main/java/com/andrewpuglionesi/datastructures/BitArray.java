@@ -122,6 +122,15 @@ public class BitArray {
         }
     }
 
+    /**
+     * Sets all bits in the bit array to the specified value.
+     * @param value if value is true, every bit will be set to 1. Else every bit will be set to 0.
+     */
+    public void fill(final boolean value) {
+        byte byteVal = value ? (byte) 0xff : 0;
+        Arrays.fill(this.bytes, byteVal);
+    }
+
     private void validateIndex(final int index) {
         if (index < 0 || index >= this.size) {
             throw new IndexOutOfBoundsException("Index %d is out of bounds (size = %d)".formatted(index, this.size));
