@@ -73,11 +73,7 @@ public class PbmWriter {
      * Sets all pixels in the image to the specified fill color.
      */
     public void fillImage(@NonNull final PixelFill pixelFill) {
-        if (pixelFill == PixelFill.WHITE) {
-            this.bitArray.fill(false);
-        } else {
-            this.bitArray.fill(true);
-        }
+        this.bitArray.fill(pixelFill.getBitValue());
     }
 
     /**
