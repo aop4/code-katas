@@ -21,6 +21,9 @@ gradlew check
 ## Build and test Python Solutions
 See [src/python/README.md](./src/python/README.md).
 
+## Build and test C# Solutions
+See [csharp/README.md](./csharp/README.md).
+
 ## Why?
 For me, practicing algorithms problems is about more than interview prep. I look at them as puzzles, and I solve them for the sake of solving them.  
 
