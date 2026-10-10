@@ -1,7 +1,7 @@
 Welcome to the snek zone 🐍
 
 # Prerequisites
-Install Python 3 (required) and Pip (optional).
+Install Python 3 (required) and Pip.
 
 # Run unit tests without coverage
 ```bash
