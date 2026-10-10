@@ -3,12 +3,8 @@ Welcome to the snek zone 🐍
 # Prerequisites
 Install Python 3 (required) and Pip (optional).
 
-# Project Structure
-All Python code in this repo lives within `src/python`. `src/python/tests` contains unit tests.
-
 # Run unit tests without coverage
 ```bash
-cd src/python
 python3 -m unittest
 ```
 
@@ -25,7 +21,7 @@ pip install -r requirements.txt
 ```
 
 # Run a full build
-The full build will activate your virtual environment, install dependencies, run unit tests with coverage, and run a linter. It assumes you have created a virtual environment in `src/python/venv` as above.
+The full build will activate your virtual environment, install dependencies, run unit tests with coverage, and run a linter. It assumes you have created a virtual environment as above.
 ## Linux
 ```bash
 bash full_build
